@@ -1,34 +1,41 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+//import './App.css'
+import { Route, Routes } from 'react-router-dom'
+import Home from './pages/Home'
+import Authentication from './pages/Authentication'
+import Feed from './pages/Feed'
+import Share from './pages/Share'
+import Navbar from './components/Navbar'
+import BarraLateral from './components/BarraLateral/BarraLateral'
+import styled from 'styled-components'
+import Perfil from './pages/Perfil'
+import SobreNosotros from './pages/SobreNosotros'
+
+const MainContainer = styled.main`
+  display: flex;
+  gap:24px;
+`
 
 function App() {
-  const [count, setCount] = useState(0)
+  // const [count, setCount] = useState(0)
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className='min-h-screen bg-gray-100'>
+      {/* <Navbar /> */}
+      <MainContainer>
+        <BarraLateral />
+        <Routes>
+          <Route path='/' element={<Home />}></Route>
+          <Route path='/authentication' element={<Authentication />}></Route>
+          <Route path='/feed' element={<Feed />}></Route>
+          <Route path='/share' element={<Share />}></Route>
+          <Route path='/perfil' element={<Perfil />}></Route>
+          <Route path='/sobreNosotros' element={<SobreNosotros />}></Route>
+        </Routes>
+      </MainContainer>
+
+
+    </div>
   )
 }
 
