@@ -12,8 +12,10 @@ import Login from "./pages/Login";       // página que renderiza <Authenticatio
 import Register from "./pages/Register"; // página que renderiza <Authentication initialMode="register" .../>
 
 const MainContainer = styled.main`
+background-color: #00090E;
   display: flex;
   gap: 24px;
+  padding:56px;
 `;
 
 // Layout privado (barra lateral + contenido)
