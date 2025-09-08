@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import {useNavigate } from "react-router-dom";
 
+type Mode = "login" | "register";
+
 interface AuthenticationProps {
     onLogin: () => void;
+    initialMode?: Mode; 
 }
 
 type FormValues = {
@@ -13,9 +16,12 @@ type FormValues = {
     recordar?: boolean;
 };
 
-const Authentication: React.FC<AuthenticationProps> = ({ onLogin }) => {
+const Authentication: React.FC<AuthenticationProps> = ({ 
+    onLogin,
+    initialMode = "login",
+ }) => {
     const navigate = useNavigate();
-    const [registroActive, setRegistroActive] = useState(false);
+    const [registroActive, setRegistroActive] = useState(initialMode === "register");
 
     const {
         register,
@@ -204,7 +210,7 @@ const Authentication: React.FC<AuthenticationProps> = ({ onLogin }) => {
                                     ¿Tienes una cuenta?{" "}
                                     <button
                                         type="button"
-                                        onClick={() => setRegistroActive(false)}
+                                        onClick={() => navigate("/login")}
                                         className="text-[#81FE88] hover:underline font-medium"
                                     >
                                         Inicia tu sesión
@@ -215,7 +221,7 @@ const Authentication: React.FC<AuthenticationProps> = ({ onLogin }) => {
                                     ¿Todavía no tienes una cuenta?{" "}
                                     <button
                                         type="button"
-                                        onClick={() => setRegistroActive(true)}
+                                        onClick={() => navigate("/register")}
                                         className="text-[#81FE88] hover:underline font-medium"
                                     >
                                         ¡Crea tu registro!
