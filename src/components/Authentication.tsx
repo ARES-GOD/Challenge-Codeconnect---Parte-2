@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import {useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../hooks/hooks";
+import { loginWithEmail, registerWithEmail, selectAuthError, selectAuthStatus } from "../redux/authSlice";
 
 type Mode = "login" | "register";
 
@@ -22,6 +24,9 @@ const Authentication: React.FC<AuthenticationProps> = ({
  }) => {
     const navigate = useNavigate();
     const [registroActive, setRegistroActive] = useState(initialMode === "register");
+    const dispatch = useAppDispatch();
+    const status =  useAppSelector(selectAuthStatus);
+    const error = useAppSelector(selectAuthError);
 
     const {
         register,
@@ -35,18 +40,26 @@ const Authentication: React.FC<AuthenticationProps> = ({
 
     const onSubmit = async (data: FormValues) => {
         try {
-            // Aquí pones tu lógica de Firebase más adelante:
-            // if (registroActive) { await createUserWithEmailAndPassword(...) }
-            // else { await signInWithEmailAndPassword(...) }
-
-            // Si todo sale bien:
-            onLogin(); // actualizas el estado de autenticación global
-            reset(undefined, { keepValues: true });
-
-            // Redirige al home "/"
-            navigate("/");
-
-            console.log("Datos enviados:", data);
+            if (registroActive) {
+                const res = await dispatch(registerWithEmail({
+                    name: data.nombre ?? "",
+                    email: data.email,
+                    password: data.password
+                }));
+                if (registerWithEmail.fulfilled.match(res)) {
+                    onLogin();
+                    navigate("/");
+                }
+            } else {
+                const res = await dispatch(loginWithEmail({
+                    email:data.email,
+                    password:data.password,
+                }));
+                if (loginWithEmail.fulfilled.match(res)) {
+                    onLogin();
+                    navigate("/");
+                }
+            }
         } catch (error) {
             console.error("Error en autenticación:", error);
         }
