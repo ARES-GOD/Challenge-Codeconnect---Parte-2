@@ -10,10 +10,14 @@ Challenge de Alura cuyo objetivo es crear una red social para compartir proyecto
 
 ## :hammer:Funcionalidades del proyecto
 
-- `Funcionalidad 1`: El sistema empieza con la autentificación del usuario y se genera un JWT.
+- `Funcionalidad 1`: Inicio de sesion a traves de autenticacion de firebase.
 
-![image](https://github.com/ARES-GOD/ChallengeForoHub/assets/56364299/69510187-baac-4b3a-8653-9b0f021a26fb)
+<img width="1292" height="798" alt="image" src="https://github.com/user-attachments/assets/9eeb00a0-125e-4ce3-8b72-86ada15103f2" />
 
--  `Funcionalidad 2`: Registro de tópico.
+-  `Funcionalidad 2`: Pantalla principal donde se ve la barra lateral para la navegacion.
 
-![image](https://github.com/ARES-GOD/ChallengeForoHub/assets/56364299/b1bb3a41-2b36-44ad-9afb-fb83faeeae91)
+<img width="1278" height="815" alt="image" src="https://github.com/user-attachments/assets/44b2b51e-0fe4-48b6-97ed-fe8bb8ad7cd6" />
+
+-  `Funcionalidad 3`: Diseño de Layout de pantalla de sobre nosotros.
+
+<img width="1187" height="825" alt="image" src="https://github.com/user-attachments/assets/bbc98810-2e53-4baf-bcaf-48ab1288b15c" />
