@@ -16,7 +16,7 @@ const ListaEstilizada = styled.ul`
 
 interface IProps { };
 
-const BarraLateral: FC<IProps> = (props) => {
+const BarraLateral: FC<IProps> = () => {
     return (
         <aside className="w-[177px] bg-[#171D1F] px-4 py-0 sticky top-0 h-screen flex-shrink-0">
             <nav className="flex flex-col gap-[80px] items-center">
