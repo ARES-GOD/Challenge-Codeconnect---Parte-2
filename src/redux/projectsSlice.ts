@@ -176,7 +176,13 @@ export const fetchProjectById = createAsyncThunk(
     const projectRef = doc(db, "projects", projectId);
     const projectDoc = await getDoc(projectRef);
     if (!projectDoc.exists()) throw new Error("Producto no encontrado");
-    return { id: projectDoc.id, ...projectDoc.data() } as IProject;
+
+    const data = projectDoc.data();
+    const autorId = typeof data.autor?.id === "string" ? 
+      data.autor.id : String(data.autor)
+    const {autor, ...rest} = data;
+
+    return { id: projectDoc.id, ...rest, autorId } as IProject;
   }
 );
 

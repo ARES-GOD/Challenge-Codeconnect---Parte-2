@@ -14,4 +14,7 @@ export interface IProject {
         comments: number;
         share: number;
     };
+    //NUEVO
+    code?: string;
+    language?: string;
 }

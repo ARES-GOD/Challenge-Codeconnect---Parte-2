@@ -7,7 +7,7 @@ interface Props {
   onClearAll: () => void;
 }
 
-const Tags: FC<Props> = ({ tags, active, onToggle, onClearAll }) => {
+const Tags: FC<Props> = ({ tags, active, onToggle}) => {
   return (
     <div className="flex items-center gap-2 flex-wrap">
       {tags.map((tag) => {
@@ -28,14 +28,6 @@ const Tags: FC<Props> = ({ tags, active, onToggle, onClearAll }) => {
           </button>
         );
       })}
-      {/* {active.length > 0 && (
-        <button
-          onClick={onClearAll}
-          className="ml-2 text-sm text-gray-400 hover:text-gray-300 underline"
-        >
-          Limpiar filtros
-        </button>
-      )} */}
     </div>
   );
 };

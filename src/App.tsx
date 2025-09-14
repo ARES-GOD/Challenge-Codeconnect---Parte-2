@@ -10,6 +10,7 @@ import Perfil from "./pages/Perfil";
 import SobreNosotros from "./pages/SobreNosotros";
 import Login from "./pages/Login";       // página que renderiza <Authentication initialMode="login" .../>
 import Register from "./pages/Register"; // página que renderiza <Authentication initialMode="register" .../>
+import ProjectDetail from "./pages/ProjectDetail";
 
 const MainContainer = styled.main`
 background-color: #00090E;
@@ -53,6 +54,7 @@ export default function App() {
           <Route path="/share" element={<Share />} />
           <Route path="/perfil" element={<Perfil />} />
           <Route path="/sobreNosotros" element={<SobreNosotros />} />
+          <Route path="/project/:projectId" element={<ProjectDetail />} />
         </Route>
       ) : (
         // Si no está autenticado, redirige todo a /login
