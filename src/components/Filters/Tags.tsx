@@ -1,75 +1,41 @@
-import { useState, type FC } from "react";
-import type { ITag } from "../../interface/ITag";
+import { type FC } from "react";
 
-interface IProps {
-  initialTags?: ITag[];
+interface Props {
+  tags: string[];
+  active: string[];
+  onToggle: (tag: string) => void;
+  onClearAll: () => void;
 }
 
-const Tags: FC<IProps> = ({ initialTags }) => {
-  const [tags, setTags] = useState<ITag[]>(
-    initialTags || [
-      { id: 1, label: "Front-end", isActive: true },
-      { id: 2, label: "React", isActive: false },
-      { id: 3, label: "Accessibilidad", isActive: false },
-    ]
-  );
-
-  const toggleTag = (id: number) => {
-    setTags(prev =>
-      prev.map(tag =>
-        tag.id === id ? { ...tag, isActive: !tag.isActive } : tag
-      )
-    );
-  };
-
-  const clearAll = () => {
-    setTags(prev => prev.map(tag => ({ ...tag, isActive: false })));
-  };
-
+const Tags: FC<Props> = ({ tags, active, onToggle, onClearAll }) => {
   return (
-    <div className="w-[996px] grid grid-cols-[1fr_auto] gap-y-2 items-start">
-      {/* Columna izquierda: tags (con wrap) */}
-      <div className="flex items-center gap-2 flex-wrap">
-        {tags.map(tag => (
-          <div
-            key={tag.id}
-            className={`
-              flex items-center gap-1 px-3 py-1 text-sm rounded-full cursor-pointer
-              transition-all duration-200
-              ${tag.isActive ? "bg-[#BCBCBC]" : "bg-[#888888]"}
-            `}
-            onClick={() => !tag.isActive && toggleTag(tag.id)}
+    <div className="flex items-center gap-2 flex-wrap">
+      {tags.map((tag) => {
+        const isActive = active.includes(tag);
+        return (
+          <button
+            key={tag}
+            onClick={() => onToggle(tag)}
+            className={[
+              "px-3 py-1 rounded-full text-sm",
+              isActive
+                ? "bg-[#2A2F36] text-white ring-1 ring-[#6FFFB0]"
+                : "bg-[#1A1F23] text-gray-300 hover:text-white"
+            ].join(" ")}
           >
-            <span>{tag.label}</span>
-            {tag.isActive && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleTag(tag.id);
-                }}
-                className="hover:bg-gray-500 rounded-full p-0.5 transition-colors ml-1"
-              >
-                <svg
-                  className="w-3 h-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Columna derecha: botón limpiar */}
-      <button
-        onClick={clearAll}
-        className="justify-self-end text-gray-400 hover:text-white text-sm underline transition-colors ml-2"
-      >
-        Limpiar todo
-      </button>
+            {tag}
+            {isActive && <span className="ml-1">×</span>}
+          </button>
+        );
+      })}
+      {/* {active.length > 0 && (
+        <button
+          onClick={onClearAll}
+          className="ml-2 text-sm text-gray-400 hover:text-gray-300 underline"
+        >
+          Limpiar filtros
+        </button>
+      )} */}
     </div>
   );
 };

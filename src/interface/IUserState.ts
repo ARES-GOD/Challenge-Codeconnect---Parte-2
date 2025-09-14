@@ -1,5 +1,7 @@
 export interface IUserState {
-    name: string,
-    email: string,
-    password: string,
+    id: string,
+    user: string, //NAME
+    email?: string,
+    password?: string,
+    image?: string,
 }
