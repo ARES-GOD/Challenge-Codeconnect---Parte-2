@@ -178,11 +178,93 @@ export const fetchProjectById = createAsyncThunk(
     if (!projectDoc.exists()) throw new Error("Producto no encontrado");
 
     const data = projectDoc.data();
-    const autorId = typeof data.autor?.id === "string" ? 
+    const autorId = typeof data.autor?.id === "string" ?
       data.autor.id : String(data.autor)
-    const {autor, ...rest} = data;
+    const { autor, ...rest } = data;
 
     return { id: projectDoc.id, ...rest, autorId } as IProject;
+  }
+);
+
+/**
+ * Trae proyectos del autor indicado (perfil).
+ * Usa el ref de /users/{authorId} para filtrar y mapea autor -> autorId (string).
+ */
+export const fetchProjectsByAuthor = createAsyncThunk(
+  "projects/fetchByAuthor",
+  async (authorId: string, { getState }) => {
+    // user requerido, image opcional (mismo helper que ya usaste)
+    type PublicUser = { user: string; image?: string };
+
+    const state = getState() as RootState;
+    const { itemsPerPage } = state.projects.pagination;
+
+    const projectsCol = collection(db, "projects");
+
+    // Filtramos por autor (DocumentReference)
+    const authorRef = doc(db, "users", authorId);
+
+    // Constraints (orden por fecha, opcionalmente limit como en feed)
+    const queryConstraints: QueryConstraint[] = [
+      where("autor", "==", authorRef),
+      orderBy("createdAt", "desc"),
+      limit(itemsPerPage)
+    ];
+
+    const q = query(projectsCol, ...queryConstraints);
+
+    // Total para paginación/counter (sin limit)
+    const totalSnap = await getCountFromServer(
+      query(projectsCol, where("autor", "==", authorRef))
+    );
+    const total = totalSnap.data().count;
+
+    const snap = await getDocs(q);
+
+    // 1) Base sin meter DocumentReference
+    const rawProjects: IProject[] = snap.docs.map(d => {
+      const data = d.data() as any;
+      const autorId =
+        typeof data.autor?.id === "string" ? data.autor.id : String(data.autor);
+      const { autor, ...rest } = data;
+      return { id: d.id, ...rest, autorId } as IProject;
+    });
+
+    // 2) (Opcional) Enriquecer autor (en este caso todos son el mismo, pero dejamos genérico)
+    const uniqueAuthorIds = Array.from(new Set(rawProjects.map(p => p.autorId).filter(Boolean)));
+    const fetchUsersChunk = async (ids: string[]): Promise<Map<string, PublicUser>> => {
+      const usersCol = collection(db, "users");
+      const usersQ = query(usersCol, where(documentId(), "in", ids));
+      const usersSnap = await getDocs(usersQ);
+      const map = new Map<string, PublicUser>();
+      usersSnap.forEach(u => {
+        const data = u.data() as any;
+        map.set(u.id, {
+          user: String(data.user ?? ""),
+          image: data.image ? String(data.image) : undefined
+        });
+      });
+      return map;
+    };
+
+    const chunkSize = 10;
+    const maps: Map<string, PublicUser>[] = [];
+    for (let i = 0; i < uniqueAuthorIds.length; i += chunkSize) {
+      const chunk = uniqueAuthorIds.slice(i, i + chunkSize);
+      maps.push(await fetchUsersChunk(chunk));
+    }
+    const usersMap: Map<string, PublicUser> = new Map();
+    maps.forEach(m => m.forEach((v, k) => usersMap.set(k, v)));
+
+    const projects: IProject[] = rawProjects.map(p => {
+      const u = usersMap.get(p.autorId);
+      return {
+        ...p,
+        autorData: u ? { id: p.autorId, user: u.user || p.autorId, image: u.image } : undefined
+      };
+    });
+
+    return { projects, total };
   }
 );
 
@@ -242,6 +324,23 @@ export const projectsSlice = createSlice({
       .addCase(fetchProjectById.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message || "Error consultando el producto";
+      })
+      //Para seccion de PERFIL
+      .addCase(fetchProjectsByAuthor.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(fetchProjectsByAuthor.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        if (action.payload) {
+          projectAdapter.setAll(state, action.payload.projects);
+          state.pagination.totalItems = action.payload.total;
+        }
+        state.error = null;
+      })
+      .addCase(fetchProjectsByAuthor.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message || "Error cargando proyectos del autor";
       });
   },
 });
